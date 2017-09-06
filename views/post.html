@@ -1,0 +1,116 @@
+<div class="post-container col-md-12 col-sm-12 col-xs-12 col-lg-12 comments-page" ng-if="completePost">
+	<div class="post col-md-12 col-lg-12 col-sm-12 col-xs-12">
+		<div class="votes col-md-1 col-lg-1 col-sm-1 col-xs-6" >
+			<img src="./assets/images/uparrow.svg" class="arrows" alt="" ng-click="$root.showMessage='true'">
+			{{completePost.data.score|thousandSuffix:1}}
+			<img src="./assets/images/downarrow.svg" class="arrows" alt="" ng-click="$root.showMessage='true'">
+		</div>
+		<div class="post-details col-md-11 col-lg-11 col-sm-11 col-xs-12">
+			<div class="post-thumb hidden-xs">
+				<img ng-src="{{completePost.data.thumbnail}}" ng-if="completePost.data.thumbnail!='self'&&completePost.data.thumbnail!='default'&&completePost.data.thumbnail!='image'&&completePost.data.thumbnail!=''" alt="">
+				<img ng-src="./assets/images/text.svg" ng-class="completePost.data.thumbnail=='self'?'thumb':''" ng-if="completePost.data.thumbnail=='self'" alt="">
+				<img ng-src="./assets/images/link.svg" ng-class="completePost.data.thumbnail=='default'?'thumb':''" ng-if="completePost.data.thumbnail=='default'" alt="">
+				<img ng-src="./assets/images/image.svg" ng-class="completePost.data.thumbnail=='image'?'thumb':''" ng-if="completePost.data.thumbnail=='image'" alt="">
+				<img ng-src="{{completePost.data.media.oembed.thumbnail_url}}" ng-if="completePost.data.thumbnail==''&&completePost.data.media" alt="">
+				<img ng-src="./assets/images/image.svg"  class="thumb" ng-if="completePost.data.thumbnail==''&&!completePost.data.media&&completePost.data.selftext==''" alt="">
+				<img ng-src="./assets/images/text.svg"  class="thumb" ng-if="completePost.data.thumbnail==''&&!completePost.data.media&&completePost.data.selftext!=''" alt="">
+			</div>
+			<div class="thumb-detail">
+				<div class="post-title">
+					<a href="{{completePost.data.url}}">{{completePost.data.title}}</a>
+					<span class="tag" ng-if="post.data.link_flair_text">{{completePost.data.link_flair_text}}</span>
+					<span class="domain">{{completePost.data.domain}}</span>
+				</div>
+				<div class="author-details">
+					<div class="immediate-action"></div>
+					<div class="detail-wrapper">
+						<div class="submitdetails">
+							<img src="./assets/images/clock.svg" alt=""> 
+							<submitted-time date="{{completePost.data.created_utc}}"></submitted-time> 
+							<img src="./assets/images/user.svg" alt=""> 
+							<span>{{completePost.data.author}}</span>
+						</div>
+						<div class="comments">
+							<span ng-if="completePost.data.num_comments!=0">
+								<img src="./assets/images/chat.svg" alt="">  {{completePost.data.num_comments}} 
+								<span ng-if="completePost.data.num_comments>1">comments</span> 
+								<span ng-if="completePost.data.num_comments==1">comment</span> 
+							</span>
+							<a href="javascript:void(0)" ng-click="$root.showMessage = 'true'" ng-if="completePost.data.num_comments==0">
+								<img src="./assets/images/chat.svg" alt="">  comment
+							</a> 
+						</div>
+					</div>
+				</div>
+			</div>
+			<div ng-if="preview.image!=''" class="preview-container">
+				<img ng-src="{{preview.image}}" alt="" class="img-responsive" >
+			</div>
+			<div ng-if="preview.text!=''" class="preview-container"><span ng-bind-html="preview.text"></span></div>
+			<div ng-if="preview.video!=''" class="preview-container"><span ng-bind-html="preview.video"></span></div>
+		</div>
+	</div>
+</div>
+
+<ul class="commentList comment-container" ng-if="comments">
+	<li ng-repeat="item in comments" class="commentItem parentItem" ng-init="toggleId=item.data.id;parentId=item.data.parent_id"  ng-class="item.kind=='more'?'nopadding':''" data-name="{{item.data.name}}{{item.data.parent_id}}">
+		<div class="vote-option" ng-if="item.kind!='more'">
+			<img src="./assets/images/voteup.svg" alt="" ng-click="$root.showMessage='true'">
+			<img src="./assets/images/votedown.svg" alt="" ng-click="$root.showMessage='true'">
+		</div>
+		<div class="comment-item">
+			<div class="author-details" ng-if="item.kind!='more'">
+				<a data-target="#collapse_{{toggleId}}" data-toggle="collapse" ng-if="item.kind!='more'" ng-click="toggleVoteoption(toggleId,$event)">
+		    		<img src="./assets/images/remove.svg" class="collapseIcn" alt="">
+		    	</a>
+		    	<span class="username">{{item.data.author}}</span>
+		    	<span class="score">{{item.data.score}} points</span>
+		    	<submitted-time date="{{item.data.created_utc}}"></submitted-time>
+			</div>
+	    	<div class="comment-data collapse in" id="collapse_{{toggleId}}">
+					<span class="title" ng-if="item.kind!='more'" ng-bind-html="item.data.body_html | renderHTMLCorrectly"></span>
+					<span ng-if="item.kind=='more'&&item.data.count!=0" class='loadmore' ng-click="$root.showMessage='true'">load more comments ( {{item.data.count}} replies )</span>
+					<span ng-if="item.kind=='more'&&item.data.count==0"><a ui-sref="post({link:'{{link}}{{id}}'})">continue this thread</a></span>
+		        
+			    <ul ng-if="item.data.replies.data.children && item.data.replies.data.children.length > 0" class="commentList">
+
+			        <li ng-repeat="item in item.data.replies.data.children" class="commentItem" ng-init="toggleId=item.data.id;item.kind=='more'&&item.data.count!=0?'':parentId=item.data.link_id" ng-class="item.kind=='more'?'nopadding':''" data-name="{{item.data.name}}">
+				        <div class="vote-option" ng-if="item.kind!='more'">
+							<img src="./assets/images/voteup.svg" alt="" ng-click="$root.showMessage='true'">
+							<img src="./assets/images/votedown.svg" alt="" ng-click="$root.showMessage='true'">
+						</div>
+						<div class="comment-item" >
+							<div class="author-details" ng-if="item.kind!='more'">
+								<a data-target="#collapse_{{toggleId}}" data-toggle="collapse" ng-if="item.kind!='more'" ng-click="toggleVoteoption(toggleId,$event)">
+						    		<img src="./assets/images/remove.svg" class="collapseIcn" alt="">
+						    	</a>
+						    	<span class="username">{{item.data.author}}</span>
+						    	<span class="score">{{item.data.score}} points</span>
+						    	<submitted-time date="{{item.data.created_utc}}"></submitted-time>
+							</div>
+							<div class="comment-data collapse in" id="collapse_{{toggleId}}">
+					            <span class="title" ng-if="item.kind!='more'" ng-bind-html="item.data.body_html | renderHTMLCorrectly"></span>
+					            <span ng-if="item.kind=='more'&&item.data.count!=0" class='loadmore' ng-click="getMoreComments(toggleId,item.data.children,item.data.count,parentId,$event)">load more comments ( {{item.data.count}} replies )</span>
+					            <span ng-if="item.kind=='more'&&item.data.count==0"><a ui-sref="post({link:'{{link}}{{id}}'})">continue this thread</a></span>
+				        	
+								<div ng-switch on="item.data.replies.data.children.length > 0">
+									<div ng-switch-when="true">
+										<div ng-init="subItems = item.data.replies.data.children;" ng-include="'views/post-partial.html'"></div>  
+									</div>
+								</div>
+							</div>
+						</div>
+			        </li>
+			    </ul>
+			</div>
+		</div>
+	</li>
+</ul>
+
+<div class="showbox" ng-if="!completePost&&!comments">
+  <div class="loader">
+    <svg class="circular" viewBox="25 25 50 50">
+      <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+    </svg>
+  </div>
+</div>

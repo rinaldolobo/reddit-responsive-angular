@@ -1,0 +1,29 @@
+<ul ng-if="item.data.replies.data.children && item.data.replies.data.children.length > 0" class="commentList collapse in" ng-init="id=item.data.id">
+	<li ng-repeat="item in item.data.replies.data.children" class="commentItem" ng-init="toggleId=item.data.id;item.kind=='more'&&item.data.count!=0?'':parentId=item.data.link_id"  ng-class="item.kind=='more'?'nopadding':''" data-name="{{item.data.name}}">
+		<div class="vote-option" ng-if="item.kind!='more'">
+			<img src="./assets/images/voteup.svg" alt="" ng-click="$root.showMessage='true'">
+			<img src="./assets/images/votedown.svg" alt="" ng-click="$root.showMessage='true'">
+		</div>
+		<div class="comment-item">
+			<div class="author-details" ng-if="item.kind!='more'">
+				<a data-target="#collapse_{{toggleId}}" data-toggle="collapse" ng-if="item.kind!='more'" ng-click="toggleVoteoption(toggleId,$event)">
+					<img src="./assets/images/remove.svg" class="collapseIcn" alt="" >
+				</a>
+				<span class="username">{{item.data.author}}</span>
+		    	<span class="score">{{item.data.score}} points</span>
+		    	<submitted-time date="{{item.data.created_utc}}"></submitted-time>
+			</div>
+	    	<div class="comment-data collapse in" id="collapse_{{toggleId}}">
+				<span class="title" ng-if="item.kind!='more'" ng-bind-html="item.data.body_html | renderHTMLCorrectly"></span>
+				<span ng-if="item.kind=='more'&&item.data.count!=0" class='loadmore' ng-click="getMoreComments(toggleId,item.data.children,item.data.count,parentId,$event)">load more comments ( {{item.data.count}} replies )</span>
+				<span ng-if="item.kind=='more'&&item.data.count==0"><a ui-sref="post({link:'{{link}}{{id}}'})">continue this thread</a></span>
+
+				<div ng-switch on="item.data.replies.data.children.length > 0">
+					<div ng-switch-when="true">
+						<div ng-init="subItems = item.data.replies.data.children;" ng-include="'views/post-partial.html'"></div>  
+					</div>
+				</div>
+			</div>
+		</div>
+	</li>
+</ul>

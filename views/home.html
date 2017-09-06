@@ -1,0 +1,62 @@
+<div class="post-container col-md-12 col-sm-12 col-lg-12 col-xs-12" ng-if="posts">
+	<div class="post col-md-12 col-lg-12 col-sm-12 col-xs-12" ng-repeat="post in posts" ng-if="!post.data.over_18">
+		<div class="votes col-md-1 col-lg-1 col-sm-1 col-xs-6" >
+			<img src="./assets/images/uparrow.svg" class="arrows" alt="" ng-click="$root.showMessage='true'">
+			{{post.data.score|thousandSuffix:1}}
+			<img src="./assets/images/downarrow.svg" class="arrows" alt="" ng-click="$root.showMessage='true'">
+		</div>
+		<div class="post-details col-md-11 col-lg-11 col-sm-11 col-xs-12">
+			<a ui-sref="post({link:'{{post.data.permalink}}',type: '{{type}}'})">
+				<div class="post-thumb">
+					<img ng-src="{{post.data.thumbnail}}" ng-if="post.data.thumbnail!='self'&&post.data.thumbnail!='default'&&post.data.thumbnail!='image'" ng-image-appear responsive animation="bounceIn" animation-duration="1s" alt="">
+					<img ng-src="./assets/images/text.svg" ng-class="post.data.thumbnail=='self'?'thumb':''" ng-if="post.data.thumbnail=='self'" alt="">
+					<img ng-src="./assets/images/link.svg" ng-class="post.data.thumbnail=='default'?'thumb':''" ng-if="post.data.thumbnail=='default'" alt="">
+					<img ng-src="./assets/images/image.svg" ng-class="post.data.thumbnail=='image'?'thumb':''" ng-if="post.data.thumbnail=='image'" alt="">
+				</div>
+			</a>
+			<div class="thumb-detail">
+				<div class="post-title">
+					<div class="title-wrapper visible-xs">
+						<a href="{{post.data.url}}">{{post.data.title}}</a>
+					</div>
+					<a class="hidden-xs" href="{{post.data.url}}">{{post.data.title}}</a>
+					<span class="tag" ng-if="post.data.link_flair_text">{{post.data.link_flair_text}}</span>
+					<span class="domain">{{post.data.domain}}</span>
+				</div>
+				<div class="author-details">
+					<div class="immediate-action"></div>
+					<div class="detail-wrapper">
+						<div class="submitdetails">
+							<img src="./assets/images/clock.svg" alt=""> 
+							<submitted-time date="{{post.data.created_utc}}"></submitted-time> 
+							<div class="userdetail visible-xs">
+								<img src="./assets/images/user.svg" alt=""> 
+								<span>{{post.data.author}}</span>
+							</div>
+							<img src="./assets/images/user.svg" class="hidden-xs" alt=""> 
+							<span class="hidden-xs">{{post.data.author}}</span>
+						</div>
+						<div class="comments">
+							<a ui-sref="post({link:'{{post.data.permalink}}',type: '{{type}}'})" ng-if="post.data.num_comments!=0">
+								<img src="./assets/images/chat.svg" alt="">  {{post.data.num_comments}} 
+								<span ng-if="post.data.num_comments>1">comments</span> 
+								<span ng-if="post.data.num_comments==1">comment</span> 
+							</a>
+							<a href="javascript:void(0)" ng-click="$root.showMessage = 'true'" ng-if="post.data.num_comments==0">
+								<img src="./assets/images/chat.svg" alt="">  comment
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="showbox" ng-if="!posts">
+  <div class="loader">
+    <svg class="circular" viewBox="25 25 50 50">
+      <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+    </svg>
+  </div>
+</div>
